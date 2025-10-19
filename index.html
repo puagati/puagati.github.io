@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hola Pagui — Fecha y hora</title>
+  <meta name="description" content="Página simple que muestra la fecha y la hora actuales y el mensaje 'hola Pagui'." />
+  <style>
+    :root{
+      --bg: #0f172a;       /* slate-900 */
+      --card: #111827;     /* gray-900 */
+      --text: #e5e7eb;     /* gray-200 */
+      --muted: #9ca3af;    /* gray-400 */
+      --accent: #22d3ee;   /* cyan-400 */
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1000px 600px at 80% -10%, rgba(34,211,238,.15), transparent),
+                  radial-gradient(900px 500px at -10% 100%, rgba(99,102,241,.12), transparent),
+                  var(--bg);
+      color:var(--text); display:grid; place-items:center; padding:24px;
+    }
+    .card{
+      width:min(780px, 94vw); padding:28px 28px 22px; border-radius:24px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08); box-shadow: 0 10px 40px rgba(0,0,0,.35);
+      backdrop-filter: blur(8px);
+    }
+    h1{font-size:clamp(28px, 4.5vw, 40px); margin:0 0 8px; letter-spacing:.2px}
+    .tag{display:inline-block; font-weight:700; text-transform:uppercase; letter-spacing:.12em; font-size:12px; color:var(--accent); margin-bottom:14px}
+    .time{font-size: clamp(38px, 10vw, 80px); line-height:1.05; margin:6px 0 2px; font-variant-numeric: tabular-nums}
+    .date{font-size: clamp(16px, 3.2vw, 22px); color:var(--muted); margin:4px 0 0; font-variant-numeric: tabular-nums}
+    footer{margin-top:18px; font-size:12px; color:var(--muted)}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-live="polite">
+    <span class="tag" aria-hidden="true">hola pagui</span>
+    <h1>hola Pagui 👋</h1>
+    <div class="time" id="clock" aria-label="Hora actual">--:--:--</div>
+    <div class="date" id="date" aria-label="Fecha actual">Cargando fecha…</div>
+    <footer>
+      <span>Zona horaria: <span class="mono" id="tz">detectando…</span></span>
+    </footer>
+  </main>
+
+  <script>
+    // Formato local ES con zona horaria fija a Madrid por defecto
+    const DEFAULT_TZ = 'Europe/Madrid';
+
+    function formatTime(d, tz){
+      return new Intl.DateTimeFormat('es-ES', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false, timeZone: tz
+      }).format(d);
+    }
+    function formatDate(d, tz){
+      return new Intl.DateTimeFormat('es-ES', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        timeZone: tz
+      }).format(d);
+    }
+
+    function getPreferredTZ(){
+      try{
+        // Usa la zona del navegador si existe; si no, Madrid.
+        return Intl.DateTimeFormat().resolvedOptions().timeZone || DEFAULT_TZ;
+      }catch(e){
+        return DEFAULT_TZ;
+      }
+    }
+
+    const tz = getPreferredTZ();
+    document.getElementById('tz').textContent = tz;
+
+    function tick(){
+      const now = new Date();
+      document.getElementById('clock').textContent = formatTime(now, tz);
+      document.getElementById('date').textContent  = formatDate(now, tz);
+    }
+    tick();
+    setInterval(tick, 1000);
+  </script>
+</body>
+</html>
